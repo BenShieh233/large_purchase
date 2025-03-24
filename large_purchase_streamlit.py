@@ -142,8 +142,8 @@ def to_df(pdf_file):
 # --------------------------
 
 def main():
-    st.title("异常订单检测系统")
-    st.write("上传订单 PDF 文件，系统将解析并检测异常订单。")
+    st.title("大宗订单检测系统")
+    st.write("上传订单 PDF 文件，系统将解析并检测大宗订单。")
     
     uploaded_file = st.file_uploader("请选择 PDF 文件", type="pdf")
     if uploaded_file is not None:
@@ -164,20 +164,20 @@ def main():
             df['Qty_Shipped'] = pd.to_numeric(df['Qty_Shipped'], errors='coerce')
             abnormal_df = df[(~df['Street_Address'].fillna('').str.contains('C/O')) & (df['Qty_Shipped'] >= 10)]
             
-            st.subheader("异常订单数据")
+            st.subheader("大宗订单数据")
             if abnormal_df.empty:
-                st.info("未能找到任何符合条件的异常订单")
+                st.info("未能找到任何符合条件的大宗订单")
             else:
                 st.dataframe(abnormal_df)
                 txt_table = tabulate(abnormal_df, headers='keys', tablefmt='grid', showindex=False)
                 st.download_button(
-                    label="下载异常订单数据",
+                    label="下载大宗订单数据",
                     data=txt_table,
                     file_name="abnormal_orders.txt",
                     mime="text/plain"
                 )
         except Exception as e:
-            st.error(f"筛选异常订单时发生错误：{e}")
+            st.error(f"筛选大宗订单时发生错误：{e}")
 
 if __name__ == '__main__':
     main()
