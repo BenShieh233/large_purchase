@@ -114,12 +114,16 @@ def table_extraction(page):
     order_text, ship_text = split_text(text)
     order_results = extract_order_details(order_text)
     ship_results = extract_ship_details(ship_text)
-    # 如果 shipping 表格中有多条记录，这里只取第一条（也可以进行合并或其他处理）
+    
+    # 定义一个列表来存放所有合并后的记录
+    combined_results = []
     if not ship_results.empty:
-        ship_row = ship_results.iloc[0].to_dict()
+        for _, ship_row in ship_results.iterrows():
+            record = {**order_results, **ship_row.to_dict()}
+            combined_results.append(record)
     else:
-        ship_row = {}
-    combined_results = {**order_results, **ship_row}
+        combined_results.append(order_results)
+    
     return combined_results
 
 def to_df(pdf_file):
@@ -127,11 +131,12 @@ def to_df(pdf_file):
     with pdfplumber.open(pdf_file) as pdf:
         for i, page in enumerate(pdf.pages):
             try:
-                text_results = text_extraction(page)
-                table_results = table_extraction(page)
-                merged_results = {**text_results, **table_results}
-                df1 = pd.DataFrame([merged_results])
-                df = pd.concat([df, df1], axis=0).reset_index(drop=True)
+                text_results = text_extraction(page)  # 假设返回一个字典
+                table_records = table_extraction(page)  # 返回一个列表，每个元素为一条记录
+                for record in table_records:
+                    merged_results = {**text_results, **record}
+                    df1 = pd.DataFrame([merged_results])
+                    df = pd.concat([df, df1], axis=0, ignore_index=True)
             except Exception as e:
                 st.error(f"在第 {i+1} 页发生错误：{e}")
                 continue
