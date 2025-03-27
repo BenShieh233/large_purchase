@@ -11,7 +11,6 @@ hide_github_icon = """
   visibility: hidden;
 }
 """
-st.markdown(hide_github_icon, unsafe_allow_html=True)
 
 # --------------------------
 # 定义订单解析相关函数
@@ -20,13 +19,7 @@ st.markdown(hide_github_icon, unsafe_allow_html=True)
 def extract_field(pattern, text):
     match = re.search(pattern, text)
     return match.group(1) if match else None
-# Add custom CSS to hide the GitHub icon
-hide_github_icon = """
-#GithubIcon {
-  visibility: hidden;
-}
-"""
-st.markdown(hide_github_icon, unsafe_allow_html=True)
+
 def process_tables(tables):
     # 展开表格生成字符串列表
     flattened_list = [item.replace('\n', ' ') for sublist1 in tables for sublist2 in sublist1 for item in sublist2 if item]
